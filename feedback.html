@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Feedback Collection System</title>
+    <style>
+       @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+      :root {
+        --primary-color: #0e7490;
+        --secondary-color: #eef4fb;
+        --accent-color: #facc15;
+         --background-color: #0e7490;
+        --text-color: #2c3e50;
+        --error-color: #e74c3c;
+        --admin-color:  #06b6d4 ;
+        --border-radius: 8px;
+        --max-width: 500px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: "Poppins", sans-serif;
+        background-color: var(--background-color);
+        color: var(--text-color);
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 100vh;
+        padding: 0rem 1rem;
+      }
+      .container {
+        margin-top: 1rem;
+        background: white;
+        max-width: var(--max-width);
+        width: 100%;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        border-radius: var(--border-radius);
+        padding: 2rem;
+        position: relative;
+      }
+      .admin-button {
+        top: 1rem;
+        left: 50%;
+        transform: translateX(-50%);
+        
+        border: none;
+        font-size: 0.9rem;
+        text-decoration: none;
+        display: inline-block;
+        padding: 10px 25px;
+        font-family: "Roboto", sans-serif;
+        font-weight: 600;
+        background: transparent;
+        outline: none !important;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        display: inline-block;
+      }
+      .admin-btn {
+       
+        z-index: 1;
+       color: white;
+        padding: 0.8rem 2rem;
+        background-color: var(--admin-color);
+        border-radius: 10px;
+      }
+      .admin-btn:after {
+        position: absolute;
+        content: "";
+        width: 100%;
+        height: 0;
+        top: 0;
+        left: 0;
+        z-index: -1;
+        background: var(--background-color);
+        transition: all 0.3s ease;
+        border-radius: 10px;
+      }
+      
+      .admin-btn:hover:after {
+        top: auto;
+        bottom: 0;
+        height: 100%;
+      }
+
+      h1 {
+        text-align: center;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--primary-color);
+        margin-top: 2rem;
+       
+      }
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+      label {
+        font-weight: 600;
+      }
+      input[type="text"],
+      input[type="email"],
+      textarea,
+      select {
+ width: 100%;
+   margin-top: 0.5rem;
+        padding: 0.75rem 1rem;
+        border: 1.5px solid #ccc;
+        border-radius: var(--border-radius);
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+        resize: vertical;
+         box-shadow: inset 2px 5px 10px #8e8585;
+      }
+      input[type="text"]:focus,
+      input[type="email"]:focus,
+      textarea:focus,
+      select:focus {
+        border-color: var(--primary-color);
+        outline: none;
+      }
+      textarea {
+        min-height: 100px;
+      }
+      .rating {
+        display: flex;
+        gap: 0.5rem;
+      }
+      .rating label {
+        cursor: pointer;
+        font-size: 1.5rem;
+        color: #ccc;
+        transition: color 0.2s ease;
+      }
+      .rating input[type="radio"] {
+        display: none;
+      }
+      .rating input[type="radio"]:checked ~ label,
+      .rating label:hover,
+      .rating label:hover ~ label {
+        color: var(--accent-color);
+      }
+      button[type="submit"] {
+        background: var(--background-color);
+        color: white;
+        font-weight: 600;
+        padding: 0.75rem;
+        border: none;
+        border-radius: var(--border-radius);
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+      button[type="submit"]:hover {
+        background: var(--admin-color);
+      }
+      .message {
+        text-align: center;
+        margin-bottom: 1rem;
+        font-weight: 600;
+        color: green;
+       font-size: 1.2rem;
+      }
+      .error {
+        color: var(--error-color);
+        font-size: 0.9rem;
+      }
+      .logout-section {
+        text-align: center;
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid #eee;
+      }
+      .logout-btn {
+        background-color: #cc2917;
+        color: white;
+        padding: 0.5rem 2rem;
+        border: none;
+        border-radius: var(--border-radius);
+        font-size: 0.9rem;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        transition: background-color 0.3s ease;
+      }
+      .logout-btn:hover {
+      background-color: #c0392b;
+     
+    }
+
+
+      
+    </style>
+  </head>
+  <body>
+    <div class="container" role="main">
+      <a href="admin.html" class="admin-button admin-btn">Admin Panel</a>
+
+      <h1>Feedback Collection</h1>
+      <div
+        id="message"
+        class="message"
+        aria-live="polite"
+        role="alert"
+        style="display: none"
+      ></div>
+
+      <form id="feedbackForm" novalidate>
+        <div>
+          <label for="name"
+            >Name
+            <span aria-hidden="true" style="color: var(--error-color)"
+              >*</span
+            ></label
+          >
+          <input
+            type="text"
+            id="name"
+            name="name"
+            required
+            aria-required="true"
+            placeholder="Your name"
+          />
+          <div id="nameError" class="error" aria-live="assertive"></div>
+        </div>
+        <div>
+          <label for="email"
+            >Email
+            <span aria-hidden="true" style="color: var(--error-color)"
+              >*</span
+            ></label
+          >
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            aria-required="true"
+            placeholder="Your email address"
+          />
+          <div id="emailError" class="error" aria-live="assertive"></div>
+        </div>
+        <div>
+          <label
+            >Rating
+            <span aria-hidden="true" style="color: var(--error-color)"
+              >*</span
+            ></label
+          >
+          <div
+            class="rating"
+            role="radiogroup"
+            aria-required="true"
+            aria-labelledby="ratingLabel"
+          >
+            <input type="radio" id="star5" name="rating" value="5" />
+            <label for="star5" title="5 stars">&#9733;</label>
+            <input type="radio" id="star4" name="rating" value="4" />
+            <label for="star4" title="4 stars">&#9733;</label>
+            <input type="radio" id="star3" name="rating" value="3" />
+            <label for="star3" title="3 stars">&#9733;</label>
+            <input type="radio" id="star2" name="rating" value="2" />
+            <label for="star2" title="2 stars">&#9733;</label>
+            <input type="radio" id="star1" name="rating" value="1" />
+            <label for="star1" title="1 star">&#9733;</label>
+          </div>
+          <div id="ratingError" class="error" aria-live="assertive"></div>
+        </div>
+        <div>
+          <label for="comments">Comments</label>
+          <textarea
+            id="comments"
+            name="comments"
+            placeholder="Your feedback or suggestions"
+          ></textarea>
+        </div>
+        <button type="submit">Submit Feedback</button>
+      </form>
+
+      <div class="logout-section">
+        <a href="loginform.html" class="logout-btn">Logout</a>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        const form = document.getElementById("feedbackForm");
+        const nameInput = document.getElementById("name");
+        const emailInput = document.getElementById("email");
+        const ratingInputs = form.elements["rating"];
+        const commentsInput = document.getElementById("comments");
+        const messageDiv = document.getElementById("message");
+        const nameError = document.getElementById("nameError");
+        const emailError = document.getElementById("emailError");
+        const ratingError = document.getElementById("ratingError");
+
+        function validateEmail(email) {
+          const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          return re.test(String(email).toLowerCase());
+        }
+
+        function clearErrors() {
+          nameError.textContent = "";
+          emailError.textContent = "";
+          ratingError.textContent = "";
+          messageDiv.style.display = "none";
+          messageDiv.textContent = "";
+        }
+
+        function getSelectedRating() {
+          for (let i = 0; i < ratingInputs.length; i++) {
+            if (ratingInputs[i].checked) {
+              return ratingInputs[i].value;
+            }
+          }
+          return null;
+        }
+
+        function saveFeedback(feedback) {
+          let feedbacks = JSON.parse(localStorage.getItem("feedbacks") || "[]");
+          // Add timestamp for better tracking
+          feedback.timestamp = new Date().toISOString();
+          feedback.id = Date.now(); // Simple ID generation
+          feedbacks.push(feedback);
+          localStorage.setItem("feedbacks", JSON.stringify(feedbacks));
+        }
+
+        form.addEventListener("submit", function (e) {
+          e.preventDefault();
+          clearErrors();
+
+          let valid = true;
+
+          if (nameInput.value.trim() === "") {
+            nameError.textContent = "Please enter your name.";
+            valid = false;
+            nameInput.focus();
+          }
+          if (emailInput.value.trim() === "") {
+            emailError.textContent = "Please enter your email.";
+            if (valid) emailInput.focus();
+            valid = false;
+          } else if (!validateEmail(emailInput.value.trim())) {
+            emailError.textContent = "Please enter a valid email address.";
+            if (valid) emailInput.focus();
+            valid = false;
+          }
+          if (!getSelectedRating()) {
+            ratingError.textContent = "Please select a rating.";
+            if (valid) ratingInputs[0].focus();
+            valid = false;
+          }
+
+          if (!valid) {
+            return;
+          }
+
+          const feedback = {
+            name: nameInput.value.trim(),
+            email: emailInput.value.trim(),
+            rating: parseInt(getSelectedRating(), 10),
+            comments: commentsInput.value.trim(),
+          };
+
+          saveFeedback(feedback);
+
+          messageDiv.style.color = "green";
+          messageDiv.textContent =
+            "Thank you for your feedback! It has been submitted successfully.";
+          messageDiv.style.display = "block";
+
+          form.reset();
+
+          // Hide success message after 3 seconds
+          setTimeout(() => {
+            messageDiv.style.display = "none";
+          }, 3000);
+        });
+      })();
+    </script>
+  </body>
+</html>

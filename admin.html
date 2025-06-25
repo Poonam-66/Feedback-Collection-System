@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin Dashboard - Feedback System</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Icons"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="top-div">All Reviews , One Place</div>
+    <header class="admin-header">
+      <div class="header-content">
+        <h1 class="header-title">
+          <span class="material-icons dashboard-logo"> dashboard </span>
+          Admin
+          <span class="dashboard-color">Dashboard</span>
+        </h1>
+
+        <div class="header-actions">
+          <span class="material-icons"> assignment </span>
+          <a href="feedback.html" class="btn btn-primary"
+            >Back to Feedback Form</a
+          >
+        </div>
+
+        <div class="logout-profile-div">
+          <div class="profile-pic-div">
+            <div class="info">
+              <small
+                ><p>Hey, <b>Poonam</b></p></small
+              >
+              <small class="text-muted admin"> Admin</small>
+            </div>
+            <div>
+              <img
+                class="profile-img"
+                src="profilepic.jpeg"
+                alt="Profile-Photo"
+              />
+            </div>
+          </div>
+
+          <ul class="dropdown-menu dropdown-user animated fadeIn">
+            <div class="dropdown-user-scroll scrollbar-outer">
+              <li>
+                <div class="user-box">
+                  <div class="pic-lg">
+                    <img
+                      class="profile-img"
+                      src="profilepic.jpeg"
+                      alt="image profile"
+                    />
+                  </div>
+                  <div class="u-text">
+                    <h3>Poonam</h3>
+                    <small class="text-muted">poonamlodhi477@gmail.com</small
+                    ><a href="#" target="_blank" class="btn-vp">View Profile</a>
+                  </div>
+                </div>
+              </li>
+              <li class="menu-li-container">
+                <div class="dropdown-divider"></div>
+                <div class="btn-container">
+                  <span class="material-icons"> assignment </span>
+                  <a href="feedback.html" class="form-menu"
+                  >Feedback Form </a>
+                </div>
+                
+                <div class="dropdown-divider"></div>
+                <div class="btn-container">
+                  <div class="btn btn-secondary">
+                    <small class="material-icons"> logout </small>
+                    <a href="index.html" class="btn">Logout</a>
+                  </div>
+                </div>
+              </li>
+            </div>
+          </ul>
+        </div>
+      </div>
+    </header>
+
+    <div class="main-container">
+      <!-- Statistics Section -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span id="totalFeedback" class="stat-number">0</span>
+          <div class="stat-label">Total Feedback</div>
+        </div>
+        <div class="stat-card">
+          <span id="averageRating" class="stat-number">0.0</span>
+          <div class="stat-label">Average Rating</div>
+        </div>
+        <div class="stat-card">
+          <span id="todayFeedback" class="stat-number">0</span>
+          <div class="stat-label">Today's Feedback</div>
+        </div>
+        <div class="stat-card">
+          <span id="highRatings" class="stat-number">0</span>
+          <div class="stat-label">5-Star Ratings</div>
+        </div>
+      </div>
+
+      <!-- Filters Section -->
+      <div class="filters-section">
+        <div class="filters-grid">
+          <div class="filter-group">
+            <label for="ratingFilter">Filter by Rating</label>
+            <select id="ratingFilter">
+              <option value="">All Ratings</option>
+              <option value="5">5 Stars</option>
+              <option value="4">4 Stars</option>
+              <option value="3">3 Stars</option>
+              <option value="2">2 Stars</option>
+              <option value="1">1 Star</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="sortOrder">Sort by</label>
+            <select id="sortOrder">
+              <option value="newest">Newest First</option>
+              <option value="oldest">Oldest First</option>
+              <option value="rating-high">Highest Rating</option>
+              <option value="rating-low">Lowest Rating</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="searchInput">Search</label>
+            <input
+              type="text"
+              id="searchInput"
+              placeholder="Search by name or email..."
+            />
+          </div>
+          <div class="filter-group">
+            <button
+              id="clearAllBtn"
+              class="btn-danger"
+              style="margin-top: 1rem"
+            >
+              Clear All Feedback
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feedback List Section -->
+      <div class="feedback-section">
+        <div class="section-header">
+          📝 Feedback History (<span id="filteredCount"> 0 </span>items)
+        </div>
+        <div id="feedbackList" class="feedback-list">
+          <!-- Feedback items will be populated here -->
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <p>© 2025 Feedback System. All rights reserved.</p>
+      <p>
+        <a href="mailto:support@example.com">Contact Support</a> |
+        <a href="#">Privacy Policy</a>
+      </p>
+    </footer>
+    <script>
+      (function () {
+        const feedbackList = document.getElementById("feedbackList");
+        const totalFeedbackEl = document.getElementById("totalFeedback");
+        const averageRatingEl = document.getElementById("averageRating");
+        const todayFeedbackEl = document.getElementById("todayFeedback");
+        const highRatingsEl = document.getElementById("highRatings");
+        const filteredCountEl = document.getElementById("filteredCount");
+        const ratingFilter = document.getElementById("ratingFilter");
+        const sortOrder = document.getElementById("sortOrder");
+        const searchInput = document.getElementById("searchInput");
+        const clearAllBtn = document.getElementById("clearAllBtn");
+
+        let allFeedbacks = [];
+        let filteredFeedbacks = [];
+
+        function loadFeedbacks() {
+          allFeedbacks = JSON.parse(localStorage.getItem("feedbacks") || "[]");
+          filteredFeedbacks = [...allFeedbacks];
+          updateStatistics();
+          applyFilters();
+        }
+
+        function updateStatistics() {
+          const total = allFeedbacks.length;
+          const average =
+            total > 0
+              ? (
+                  allFeedbacks.reduce((sum, fb) => sum + fb.rating, 0) / total
+                ).toFixed(1)
+              : "0.0";
+
+          const today = new Date().toDateString();
+          const todayCount = allFeedbacks.filter((fb) => {
+            const fbDate = fb.timestamp
+              ? new Date(fb.timestamp).toDateString()
+              : new Date().toDateString();
+            return fbDate === today;
+          }).length;
+
+          const fiveStarCount = allFeedbacks.filter(
+            (fb) => fb.rating === 5
+          ).length;
+
+          totalFeedbackEl.textContent = total;
+          averageRatingEl.textContent = average;
+          todayFeedbackEl.textContent = todayCount;
+          highRatingsEl.textContent = fiveStarCount;
+        }
+
+        function applyFilters() {
+          let filtered = [...allFeedbacks];
+
+          // Rating filter
+          const ratingValue = ratingFilter.value;
+          if (ratingValue) {
+            filtered = filtered.filter(
+              (fb) => fb.rating.toString() === ratingValue
+            );
+          }
+
+          // Search filter
+          const searchTerm = searchInput.value.toLowerCase().trim();
+          if (searchTerm) {
+            filtered = filtered.filter(
+              (fb) =>
+                fb.name.toLowerCase().includes(searchTerm) ||
+                fb.email.toLowerCase().includes(searchTerm) ||
+                fb.comments.toLowerCase().includes(searchTerm)
+            );
+          }
+
+          // Sort
+          const sortValue = sortOrder.value;
+          filtered.sort((a, b) => {
+            switch (sortValue) {
+              case "newest":
+                return new Date(b.timestamp || 0) - new Date(a.timestamp || 0);
+              case "oldest":
+                return new Date(a.timestamp || 0) - new Date(b.timestamp || 0);
+              case "rating-high":
+                return b.rating - a.rating;
+              case "rating-low":
+                return a.rating - b.rating;
+              default:
+                return 0;
+            }
+          });
+
+          filteredFeedbacks = filtered;
+          filteredCountEl.textContent = filtered.length;
+          displayFeedbacks();
+        }
+
+        function displayFeedbacks() {
+          if (filteredFeedbacks.length === 0) {
+            feedbackList.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-state-icon">📭</div>
+              <h3>No feedback found</h3>
+              <p>No feedback matches your current filters, or no feedback has been submitted yet.</p>
+            </div>
+          `;
+            return;
+          }
+
+          feedbackList.innerHTML = filteredFeedbacks
+            .map((fb) => {
+              const date = fb.timestamp
+                ? new Date(fb.timestamp).toLocaleString()
+                : "Unknown date";
+              const stars = "★".repeat(fb.rating) + "☆".repeat(5 - fb.rating);
+
+              return `
+            <div class="feedback-item">
+              <div class="feedback-header">
+                <div class="user-info">
+                  <div class="user-name">${escapeHtml(fb.name)}</div>
+                  <div class="user-email">${escapeHtml(fb.email)}</div>
+                </div>
+                <div class="feedback-meta">
+                  <div class="feedback-date">${date}</div>
+                  <div class="rating-display">
+                    ${stars
+                      .split("")
+                      .map(
+                        (star) =>
+                          `<span class="star ${
+                            star === "☆" ? "empty" : ""
+                          }">${star}</span>`
+                      )
+                      .join("")}
+                  </div>
+                </div>
+              </div>
+              ${
+                fb.comments
+                  ? `<div class="feedback-comment">${escapeHtml(
+                      fb.comments
+                    )}</div>`
+                  : '<div class="feedback-comment" style="font-style: italic; color: #666;">No comments provided</div>'
+              }
+            </div>
+          `;
+            })
+            .join("");
+        }
+
+        function escapeHtml(text) {
+          const div = document.createElement("div");
+          div.textContent = text || "";
+          return div.innerHTML;
+        }
+
+        function clearAllFeedback() {
+          if (
+            confirm(
+              "Are you sure you want to delete all feedback? This action cannot be undone."
+            )
+          ) {
+            localStorage.removeItem("feedbacks");
+            allFeedbacks = [];
+            filteredFeedbacks = [];
+            updateStatistics();
+            displayFeedbacks();
+            alert("All feedback has been cleared.");
+          }
+        }
+
+        // Event listeners
+        ratingFilter.addEventListener("change", applyFilters);
+        sortOrder.addEventListener("change", applyFilters);
+        searchInput.addEventListener("input", applyFilters);
+        clearAllBtn.addEventListener("click", clearAllFeedback);
+
+        // Initialize
+        loadFeedbacks();
+
+        // Auto-refresh every 30 seconds to catch new feedback
+        setInterval(loadFeedbacks, 30000);
+      })();
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const profileTrigger = document.querySelector(".profile-pic-div");
+        const dropdownMenu = document.querySelector(
+          ".dropdown-menu.dropdown-user"
+        );
+
+        profileTrigger.addEventListener("click", function (event) {
+          event.stopPropagation(); // Prevent click from bubbling
+          dropdownMenu.classList.toggle("show");
+        });
+
+        // Hide dropdown when clicking outside
+        document.addEventListener("click", function (event) {
+          if (!dropdownMenu.contains(event.target)) {
+            dropdownMenu.classList.remove("show");
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
