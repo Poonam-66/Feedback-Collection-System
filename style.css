@@ -259,7 +259,12 @@ small {
   justify-content: center;
   gap: 0.5rem;
 }
-
+.btn-container:hover{
+  color: #06b6d4;
+}
+.form-menu:hover{
+  color: #06b6d4;
+}
 .btn-secondary {
   padding: 0.5rem;
   width: 50%;

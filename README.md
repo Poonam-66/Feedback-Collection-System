@@ -23,6 +23,4 @@ This project is designed to collect user feedback efficiently and display it in 
 - **HTML5**
 - **CSS3** (with custom variables and responsiveness)
 - **JavaScript**
-- **Swiper.js** for interactive category sliders
-- **Material Icons**
 
