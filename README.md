@@ -24,3 +24,4 @@ This project is designed to collect user feedback efficiently and display it in 
 - **CSS3** (with custom variables and responsiveness)
 - **JavaScript**
 
+
